@@ -1,0 +1,2 @@
+# BukkitApiJavaPlugins
+Eclipse Projects Here.
