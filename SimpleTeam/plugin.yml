@@ -1,0 +1,7 @@
+name: SimpleTeam
+main: com.bluesun99.simpleteam.SimpleTeam
+version: 1.11
+commands:
+  팀:
+    description: SimpleTeam 명령어입니다.
+    usage: \"/팀 ?\"을 입력 해 주세요.

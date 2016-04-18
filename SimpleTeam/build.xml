@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<!-- Configuration of the Ant build system to generate a Jar file --> 
+<project name="BuildJarZip" default="CreateJarZip">
+	<target name="CreateJarZip" description="Create Jar Zip file">
+		<jar destfile="./build/${eclipse.project}.jar" basedir="." includes="*.yml,*.txt">
+			<zipfileset dir="./bin/com" prefix="com" />
+		</jar>
+		<zip destfile="./build/${eclipse.project}.zip" basedir="." excludes="**/bin/**,**/build/**" />
+	</target>
+</project>

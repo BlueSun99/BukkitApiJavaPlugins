@@ -1,0 +1,4 @@
+name: SimpleDeathItem
+version: 1.0
+main: com.bluesun99.simpledeathitem.SimpleDeathItem
+commands: 

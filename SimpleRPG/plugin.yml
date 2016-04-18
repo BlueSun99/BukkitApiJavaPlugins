@@ -1,0 +1,7 @@
+name: SimpleRPG
+main: com.bluesun99.simplerpg.SimpleRPGMain
+version: 1.0
+commands:
+  gimme:
+    Description: gimme that!
+    Usage: /gimme

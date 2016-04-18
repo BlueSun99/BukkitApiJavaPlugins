@@ -1,0 +1,4 @@
+name: BukkitSamplePlugin
+main: com.bluesun99.sampleplugin.BukkitSamplePlugin
+version: 1.0
+commands: 

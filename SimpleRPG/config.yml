@@ -1,0 +1,27 @@
+# DEFAULT CONFIG FILE
+# WARNING - FAST_DIGGING 0 = LEVEL 1, JUMP 1 = LEVEL 2
+# POTION EFFECTS
+# https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
+
+Class:
+  Viking:
+    Spawn:
+      X: 0
+      Y: 80
+      Z: 0
+    Effect:
+      - INCREASE_DAMAGE 0
+      - SPEED 0
+  Elf:
+    Spawn:
+      X: 0
+      Y: 80
+      Z: 0
+    Effect:
+      - FAST_DIGGING 0
+      - JUMP 0
+Misc:
+  Reselector:
+    ItemName:
+      - [직업 초기화권]
+  

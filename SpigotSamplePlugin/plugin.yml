@@ -1,0 +1,4 @@
+name: SpigotSamplePlugin
+main: com.bluesun99.sampleplugin.SpigotSamplePlugin
+version: 1.0
+commands: 
