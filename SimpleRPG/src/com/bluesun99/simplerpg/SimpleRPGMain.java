@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -118,6 +119,16 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 	}
 	
 	@EventHandler
+	public void onInventoryOpen(InventoryOpenEvent e)
+	{
+		Player ply = (Player) e.getPlayer();
+		String invname = ChatColor.stripColor(e.getInventory().getName());
+		
+		if (invname.equals("클래스 재선택"))
+			CustomItems.Reselector.setReselecting(ply, true);
+	}
+	
+	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e)
 	{
 		String invname = ChatColor.stripColor(e.getInventory().getName());
@@ -127,9 +138,6 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 
 		Player ply = (Player) e.getWhoClicked();
 		e.setCancelled(true);
-		
-		if (invname.equals("클래스 재선택"))
-			CustomItems.Reselector.setReselecting(ply, true);
 		
 		/*if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR
 				|| !e.getCurrentItem().hasItemMeta())
