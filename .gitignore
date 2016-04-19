@@ -1,2 +1,4 @@
 /.metadata/**/*
 /.recommenders/**/*
+/**/build/$**.jar
+/**/build/$**.zip
