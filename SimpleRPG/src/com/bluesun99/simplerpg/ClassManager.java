@@ -119,7 +119,7 @@ public class ClassManager {
 			ply.addPotionEffect(new PotionEffect(PotionEffectType.getByName(buff[0]), Integer.MAX_VALUE, Integer.parseInt(buff[1])));
 		}
 		
-		ply.sendMessage(rc.getClassColor() + rc.getKoreanName() + " 직업군에 맞는 버프가 지급되었습니다.");
+		ply.sendMessage(rc.getClassColor() + rc.getKoreanName() + ChatColor.WHITE + " 직업군에 맞는 버프가 지급되었습니다.");
 		
 		return true;
 	}

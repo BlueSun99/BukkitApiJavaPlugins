@@ -79,6 +79,13 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 			SimpleRPGMain.logger.info("입장한 " + ply.getName() + "의 클래스는 " + rc.getKoreanName() + "입니다.");
 			ClassManager.setEffectToPlayer(ply);
 		}
+		
+		if (CustomItems.Reselector.isReselecting(ply))
+		{
+			ply.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "직업 초기화권을 사용하지 않으셨군요. 다시 생각하고 사용해주세요!");
+			CustomItems.Reselector.giveReselector(ply);
+			CustomItems.Reselector.setReselecting(ply, false);
+		}
 	}
 	
 	@EventHandler
@@ -148,28 +155,26 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 		
 		if (e.getCurrentItem() == null)
 			return;
+
+		CustomItems.Reselector.setReselecting(ply, false);
 		
 		switch (e.getCurrentItem().getType()) {
 		case WOOD_SWORD: // VIKING
 			ply.sendMessage(ChatColor.GOLD + "바이킹" + ChatColor.WHITE + " 클래스를 선택하셨습니다.");
 			ClassSelector.selectClass(ply, RPGClass.VIKING);
 			ply.playSound(ply.getLocation(), Sound.BLOCK_DISPENSER_LAUNCH, 0.1F, 1);
-			ply.closeInventory();
 			break;
 		case BOW: // ELF
 			ply.sendMessage(ChatColor.AQUA + "엘프" + ChatColor.WHITE + " 클래스를 선택하셨습니다.");
 			ClassSelector.selectClass(ply, RPGClass.ELF);
 			ply.playSound(ply.getLocation(), Sound.BLOCK_DISPENSER_LAUNCH, 0.1F, 1);
-			ply.closeInventory();
 			break;
 		case COMPASS: // EXIT
 			ply.kickPlayer("안녕히 가세요.");
 		default:
-			ply.closeInventory();
+			//ply.closeInventory();
 			break;
 		}
-		
-		CustomItems.Reselector.setReselecting(ply, false);
 	}
 	
 	@EventHandler
