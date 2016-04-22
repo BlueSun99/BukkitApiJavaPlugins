@@ -2,6 +2,9 @@ name: SimpleRPG
 main: com.bluesun99.simplerpg.SimpleRPGMain
 version: 1.0
 commands:
-  gimme:
-    Description: gimme that!
-    Usage: /gimme
+  simplerpg:
+    Description: SimpleRPG Commands.
+    Usage: /sr help 또는 /sr 도움말
+  sr:
+    Description: SimpleRPG Commands.
+    Usage: /sr help 또는 /sr 도움말

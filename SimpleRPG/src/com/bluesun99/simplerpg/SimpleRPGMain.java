@@ -39,7 +39,8 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 		this.saveConfig();
 		
 		this.getServer().getPluginManager().registerEvents(this, this);
-		this.getCommand("gimme").setExecutor(new CommandManager());
+		this.getCommand("simplerpg").setExecutor(new CommandManager());
+		this.getCommand("sr").setExecutor(new CommandManager());
 	}
 	
 	private boolean loadEconomy()
@@ -64,7 +65,7 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
-		Player ply = e.getPlayer();
+		final Player ply = e.getPlayer();
 		if (!ClassManager.hasPlayerClass(ply))
 			SimpleRPGMain.plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,
 					new Runnable(){
@@ -83,7 +84,7 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 		if (CustomItems.Reselector.isReselecting(ply))
 		{
 			ply.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "직업 초기화권을 사용하지 않으셨군요. 다시 생각하고 사용해주세요!");
-			CustomItems.Reselector.giveReselector(ply);
+			CustomItems.Reselector.give(ply);
 			CustomItems.Reselector.setReselecting(ply, false);
 		}
 	}
@@ -109,7 +110,7 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 		if (a == Action.PHYSICAL || is == null || a == Action.LEFT_CLICK_AIR)
 			return;
 		
-		if (CustomItems.Reselector.isReselector(is))
+		if (CustomItems.Reselector.isValid(is))
 		{
 			ply.getInventory().remove(is);
 			
@@ -120,9 +121,9 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e)
 	{
-		Player ply = e.getPlayer();
+		/*Player ply = e.getPlayer();
 		if (ClassManager.hasPlayerClass(ply))
-			ClassManager.setPlayerClass(ply, RPGClass.NONE);
+			ClassManager.setPlayerClass(ply, RPGClass.NONE);*/
 	}
 	
 	@EventHandler
@@ -180,7 +181,7 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e)
 	{
-		Player ply = (Player) e.getPlayer();
+		final Player ply = (Player) e.getPlayer();
 		String invname = ChatColor.stripColor(e.getInventory().getName());
 		
 		if (invname.equals("클래스 선택") && !ClassManager.hasPlayerClass(ply))
@@ -196,7 +197,7 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 		if (invname.equals("클래스 재선택") && CustomItems.Reselector.isReselecting(ply))
 		{
 			ply.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "직업 초기화권을 사용하지 않으셨군요. 다시 생각하고 사용해주세요!");
-			CustomItems.Reselector.giveReselector(ply);
+			CustomItems.Reselector.give(ply);
 			CustomItems.Reselector.setReselecting(ply, false);
 		}
 	}

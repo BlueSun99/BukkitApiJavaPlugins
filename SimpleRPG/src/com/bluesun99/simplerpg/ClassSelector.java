@@ -83,6 +83,7 @@ public class ClassSelector {
 	
 	static void selectClass(Player ply, RPGClass rc)
 	{
+		unselectClass(ply);
 		ClassManager.setPlayerClass(ply, rc);
 		ClassManager.teleportToClassSpawn(ply);
 		ClassManager.setEffectToPlayer(ply);
@@ -91,5 +92,6 @@ public class ClassSelector {
 	static void unselectClass(Player ply)
 	{
 		ClassManager.stripEffects(ply);
+		ClassManager.setPlayerClass(ply, RPGClass.NONE);
 	}
 }

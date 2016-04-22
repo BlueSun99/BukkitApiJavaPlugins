@@ -9,12 +9,14 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 class CustomItems {
 	static class Reselector {
-		static void giveReselector(Player ply)
+		static String desc = "클래스 재선택권";
+		
+		static void give(Player ply)
 		{
-			ply.getInventory().addItem(getReselector());
+			ply.getInventory().addItem(get());
 		}
 		
-		static ItemStack getReselector()
+		static ItemStack get()
 		{
 			String iname = SimpleRPGMain.plugin.getConfig().getString("Misc.Reselector.ItemName");
 			ItemStack is = new ItemStack(Material.PAPER);
@@ -31,7 +33,7 @@ class CustomItems {
 			return is;
 		}
 		
-		static boolean isReselector(ItemStack is)
+		static boolean isValid(ItemStack is)
 		{
 			return is.getType() == Material.PAPER
 					&& is.getItemMeta().hasEnchant(Enchantment.LURE)
