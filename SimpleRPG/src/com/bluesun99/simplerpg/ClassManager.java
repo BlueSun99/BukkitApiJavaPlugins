@@ -126,7 +126,9 @@ public class ClassManager {
 
 	static void stripEffects(Player ply)
 	{
-		ply.getActivePotionEffects().clear();
+		for (PotionEffect pe : ply.getActivePotionEffects())
+			if (pe.getDuration() >= 2115947647)
+				ply.removePotionEffect(pe.getType());
 	}
 
 	public static Location getSpawnLocation(Player ply)

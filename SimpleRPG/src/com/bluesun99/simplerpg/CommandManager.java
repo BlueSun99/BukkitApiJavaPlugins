@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -161,7 +160,7 @@ public class CommandManager implements CommandExecutor {
 				return;
 			}
 			
-			if (s.length <= 1 || s.length >= 4 || s[1].equalsIgnoreCase("help"))
+			if (s.length <= 2 || s.length >= 4 || s[1].equalsIgnoreCase("help"))
 			{
 				sendHelp(ply);
 				return;

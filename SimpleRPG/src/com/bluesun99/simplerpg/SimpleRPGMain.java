@@ -92,12 +92,19 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent e)
 	{
-		Player ply = e.getPlayer();
-		RPGClass rc = ClassManager.getPlayerClass(ply);
+		final PlayerRespawnEvent _e = e;
+		final Player ply = _e.getPlayer();
+		final RPGClass rc = ClassManager.getPlayerClass(ply);
 		
-		ply.sendMessage(rc.getClassColor() + rc.getKoreanName() + ChatColor.WHITE + "에 맞는 버프를 지급받고 스폰 장소로 텔레포트 되었습니다.");
-		ClassManager.setEffectToPlayer(ply);
-		e.setRespawnLocation(ClassManager.getSpawnLocation(ply));
+		_e.setRespawnLocation(ClassManager.getSpawnLocation(ply));
+		
+		this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			public void run()
+			{
+				ply.sendMessage(rc.getClassColor() + rc.getKoreanName() + ChatColor.WHITE + "에 맞는 버프를 지급받고 스폰 장소로 텔레포트 되었습니다.");
+				ClassManager.setEffectToPlayer(ply);
+			}
+		}, 1);
 	}
 	
 	@EventHandler
@@ -191,8 +198,6 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 					ClassSelector.showSelectorGUI(ply);
 				}
 			}, 2L);
-
-		SimpleRPGMain.logger.info(Boolean.toString(CustomItems.Reselector.isReselecting(ply)));
 		
 		if (invname.equals("클래스 재선택") && CustomItems.Reselector.isReselecting(ply))
 		{
