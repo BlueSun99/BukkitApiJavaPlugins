@@ -9,7 +9,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 class CustomItems {
 	static class Reselector {
-		static String desc = "클래스 재선택권";
+		static String desc = SimpleRPGMain.lm.getString("srt_reselector_desc");
 		
 		static void give(Player ply)
 		{
@@ -27,7 +27,7 @@ class CustomItems {
 			else
 				im.setDisplayName(iname);
 			java.util.List<String> ilore = new java.util.ArrayList<String>();
-			ilore.add("사용 시 직업을 재 선택할 수 있습니다.");
+			ilore.add(desc);
 			im.setLore(ilore);
 			is.setItemMeta(im);
 			return is;

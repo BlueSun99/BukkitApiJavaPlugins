@@ -8,6 +8,8 @@ public class TestMain {
 			System.out.println(c.getSimpleName());
 		}
 		//System.out.println();
+		
+		System.out.println(java.util.Locale.KOREAN);
 	}
 
 }

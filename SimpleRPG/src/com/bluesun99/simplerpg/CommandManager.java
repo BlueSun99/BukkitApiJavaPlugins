@@ -12,8 +12,6 @@ import org.bukkit.entity.Player;
 
 import com.bluesun99.simplerpg.ClassManager.RPGClass;
 
-import net.md_5.bungee.api.ChatColor;
-
 public class CommandManager implements CommandExecutor {
 	private static List<String> allowedCommands = Arrays.asList("simplerpg", "sr");
 	
@@ -62,12 +60,12 @@ public class CommandManager implements CommandExecutor {
 		{
 			if (!ply.hasPermission("simplerpg.admin"))
 			{
-				ply.sendMessage("어드민 명령어는 어드민만 사용할 수 있습니다.");
+				ply.sendMessage(SimpleRPGMain.lm.getString("srt_admin_only"));
 				return;
 			}
 			
-			ply.sendMessage("/sr give help - 아이템을 지급 커맨드 도움말을 봅니다.");
-			ply.sendMessage("/sr clear help - 클래스 초기화 커맨드 도움말을 봅니다.");
+			ply.sendMessage(SimpleRPGMain.lm.format("srt_commandhelp", "give"));
+			ply.sendMessage(SimpleRPGMain.lm.format("srt_commandhelp", "clear"));
 		}
 	}
 	
@@ -81,7 +79,7 @@ public class CommandManager implements CommandExecutor {
 		static void sendDefaultMessage(Player ply)
 		{
 			RPGClass rc = ClassManager.getPlayerClass(ply);
-			ply.sendMessage("당신의 클래스는 " +  rc.getClassColor() + rc.getKoreanName() + ChatColor.WHITE + "입니다.");
+			ply.sendMessage(SimpleRPGMain.lm.format("srt_check_class", rc.getFriendlyNameWithColor()));
 		}
 	}
 	
@@ -91,7 +89,7 @@ public class CommandManager implements CommandExecutor {
 		{
 			if (!ply.hasPermission("simplerpg.admin"))
 			{
-				ply.sendMessage("어드민 명령어는 어드민만 사용할 수 있습니다.");
+				ply.sendMessage(SimpleRPGMain.lm.getString("srt_admin_only"));
 				return;
 			}
 			
@@ -108,7 +106,7 @@ public class CommandManager implements CommandExecutor {
 				for (Player p : SimpleRPGMain.plugin.getServer().getOnlinePlayers())
 				{
 					ClassManager.setPlayerClass(p, RPGClass.NONE);
-					p.kickPlayer("클래스 초기화 작업으로 인한 킥");
+					p.kickPlayer(SimpleRPGMain.lm.getString("srt_kick_due_to_rechoose"));
 				}
 			}
 			else if (s[1] != null)
@@ -116,18 +114,18 @@ public class CommandManager implements CommandExecutor {
 					if (p.getName().equalsIgnoreCase(s[1]))
 					{
 						ClassManager.setPlayerClass(p, RPGClass.NONE);
-						p.kickPlayer("클래스 초기화 작업으로 인한 킥");
+						p.kickPlayer(SimpleRPGMain.lm.getString("srt_kick_due_to_rechoose"));
 					}
 					else
-						ply.sendMessage("해당 유저를 찾을 수 없습니다.");
+						ply.sendMessage(SimpleRPGMain.lm.getString("srt_cannot_find"));
 		}
 		
 		private static void sendHelp(Player ply)
 		{
-			ply.sendMessage("사용 가능한 명령어들");
-			ply.sendMessage("/sr clear [닉네임] - 해당 유저의 클래스를 초기화합니다.");
-			ply.sendMessage("/sr clear all - 접속한 모든 유저의 클래스를 초기화합니다.");
-			ply.sendMessage("조심하십시오. 이 명령어는 초기화 후 유저를 킥합니다.");
+			ply.sendMessage(SimpleRPGMain.lm.getString("srt_usable_commands"));
+			ply.sendMessage(SimpleRPGMain.lm.getString("srt_command_clear_usage"));
+					/*"/sr clear [닉네임] - 해당 유저의 클래스를 초기화합니다.");
+			ply.sendMessage("/sr clear all - 접속한 모든 유저의 클래스를 초기화합니다.");*/
 			return;
 		}
 	}
@@ -137,7 +135,7 @@ public class CommandManager implements CommandExecutor {
 		static void execute(CommandSender sender)
 		{
 			if (sender instanceof ConsoleCommandSender)
-				SimpleRPGMain.logger.info("콘솔에서는 사용할 수 없습니다.");
+				SimpleRPGMain.logger.info(SimpleRPGMain.lm.getString("srt_cannot_use_on_console"));
 			
 			if (sender instanceof Player)
 				sendDefaultMessage((Player) sender);
@@ -145,8 +143,8 @@ public class CommandManager implements CommandExecutor {
 		
 		static void sendDefaultMessage(Player ply)
 		{
-			ply.sendMessage("/sr class - 자신의 클래스를 확인합니다.");
-			ply.sendMessage("/sr admin - 어드민 명령어를 봅니다.");
+			ply.sendMessage(SimpleRPGMain.lm.getString("srt_command_class_usage"));
+			ply.sendMessage(SimpleRPGMain.lm.getString("srt_command_admin_usage"));
 		}
 	}
 	
@@ -156,7 +154,7 @@ public class CommandManager implements CommandExecutor {
 		{
 			if (!ply.hasPermission("simplerpg.admin"))
 			{
-				ply.sendMessage("어드민 명령어는 어드민만 사용할 수 있습니다.");
+				ply.sendMessage(SimpleRPGMain.lm.getString("srt_admin_only"));
 				return;
 			}
 			
@@ -180,7 +178,7 @@ public class CommandManager implements CommandExecutor {
 						}
 						else
 						{
-							ply.sendMessage("해당 유저를 찾을 수 없습니다.");
+							ply.sendMessage(SimpleRPGMain.lm.getString("srt_cannot_find"));
 						}
 				}
 				else
@@ -191,10 +189,10 @@ public class CommandManager implements CommandExecutor {
 		
 		private static void sendHelp(Player ply)
 		{
-			ply.sendMessage("사용 가능한 명령어들");
+			ply.sendMessage(SimpleRPGMain.lm.getString("srt_usable_commands"));
 			for (Class<?> c : CustomItems.class.getDeclaredClasses())
 				try {
-					ply.sendMessage("/sr give " + c.getSimpleName() + " [닉네임] - " + (String)c.getDeclaredField("desc").get(null));
+					ply.sendMessage(SimpleRPGMain.lm.format("srt_command_give_usage", c.getSimpleName(), (String)c.getDeclaredField("desc").get(null)));
 				} catch (Exception e) {}
 			return;
 		}

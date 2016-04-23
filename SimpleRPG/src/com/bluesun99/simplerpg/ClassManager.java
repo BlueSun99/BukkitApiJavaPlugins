@@ -1,5 +1,10 @@
 package com.bluesun99.simplerpg;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -8,6 +13,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class ClassManager {
+	private static Connection conn = SimpleRPGMain.dbm.getConnection();
+	
 	public enum RPGClass
 	{
 		NONE(0),
@@ -37,21 +44,19 @@ public class ClassManager {
 			return s.substring(0, 1).toUpperCase() + s.substring(1);
 		}
 		
-		String getRealName() // It returns like VIKING or ELF.
+		String getDeclaredName() // It returns like VIKING or ELF.
 		{
 			return this.name();
 		}
 		
-		String getKoreanName()
+		String getFriendlyName()
 		{
-			switch (this) {
-			case VIKING:
-				return "바이킹";
-			case ELF:
-				return "엘프";
-			default:
-				return "";
-			}
+			return SimpleRPGMain.lm.getString("srt_class_" + this.name().toLowerCase());
+		}
+		
+		String getFriendlyNameWithColor()
+		{
+			return getClassColor() + SimpleRPGMain.lm.getString("srt_class_" + this.name().toLowerCase()) + ChatColor.WHITE;
 		}
 		
 		ChatColor getClassColor()
@@ -69,22 +74,83 @@ public class ClassManager {
 	
 	static boolean hasPlayerClass(Player ply)
 	{
-		return ply.hasMetadata("SimpleRPG_Class") &&
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate("USE SimpleRPG;");
+			
+			ResultSet rs = st.executeQuery("SELECT * FROM playerclass;");
+			
+			while (rs.next())
+			{
+				if (rs.getString("UUID").equals(ply.getUniqueId().toString()))
+					return true;
+			}
+			
+			st.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+		/*return ply.hasMetadata("SimpleRPG_Class") &&
 				(ply.getMetadata("SimpleRPG_Class").get(0).asInt() == RPGClass.VIKING.getId()
-				|| ply.getMetadata("SimpleRPG_Class").get(0).asInt() == RPGClass.ELF.getId());
+				|| ply.getMetadata("SimpleRPG_Class").get(0).asInt() == RPGClass.ELF.getId());*/
 	}
 	
 	static RPGClass getPlayerClass(Player ply)
 	{
-		if (hasPlayerClass(ply))
-			return RPGClass.getById(ply.getMetadata("SimpleRPG_Class").get(0).asInt());
+		if (!hasPlayerClass(ply))
+			return RPGClass.NONE;
+		
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate("USE SimpleRPG;");
+			
+			ResultSet rs = st.executeQuery("SELECT * FROM playerclass;");
+			
+			while (rs.next())
+				if (rs.getString("UUID").equals(ply.getUniqueId().toString()))
+					return RPGClass.getById(rs.getInt("class"));
+			
+			st.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		/*if (hasPlayerClass(ply))
+			return RPGClass.getById(ply.getMetadata("SimpleRPG_Class").get(0).asInt());*/
 		
 		return RPGClass.NONE;
 	}
 	
 	static boolean setPlayerClass(Player ply, RPGClass rc)
 	{
-		if (ply.hasMetadata("SimpleRPG_Class"))
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate("USE SimpleRPG;");
+
+			try {
+				st.executeUpdate("DELETE FROM playerclass WHERE UUID='" + ply.getUniqueId().toString() + "';");
+			} catch (Exception e) {}
+			
+			if (rc == RPGClass.NONE)
+				return true;
+			
+			st.executeUpdate("INSERT INTO playerclass values('" + ply.getUniqueId().toString() + "'," + String.valueOf(rc.getId()) + ");");
+			
+			st.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+		
+		/*if (ply.hasMetadata("SimpleRPG_Class"))
 			ply.removeMetadata("SimpleRPG_Class", SimpleRPGMain.plugin);
 		
 		switch (rc) {
@@ -94,7 +160,7 @@ public class ClassManager {
 			return true;
 		default:
 			return false;
-		}
+		}*/
 	}
 
 	static void teleportToClassSpawn(Player ply)
@@ -119,7 +185,7 @@ public class ClassManager {
 			ply.addPotionEffect(new PotionEffect(PotionEffectType.getByName(buff[0]), Integer.MAX_VALUE, Integer.parseInt(buff[1])));
 		}
 		
-		ply.sendMessage(rc.getClassColor() + rc.getKoreanName() + ChatColor.WHITE + " 직업군에 맞는 버프가 지급되었습니다.");
+		ply.sendMessage(SimpleRPGMain.lm.format("srt_got_buff", rc.getFriendlyNameWithColor()));
 		
 		return true;
 	}

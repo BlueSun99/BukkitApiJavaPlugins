@@ -3,6 +3,10 @@
 # POTION EFFECTS
 # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 
+# Language only supports en, ko.
+
+Language: en
+
 Class:
   Viking:
     Spawn:

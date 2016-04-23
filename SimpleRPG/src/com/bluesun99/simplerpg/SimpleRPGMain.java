@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -25,6 +26,8 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 	static org.bukkit.plugin.Plugin plugin;
 	static java.util.logging.Logger logger;
 	static Economy economy;
+	static LocaleManager lm;
+	static DBManager dbm;
 	
 	@Override
 	public void onEnable()
@@ -35,6 +38,12 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 		if (!loadEconomy())
 			return;
 		
+		lm = new LocaleManager();
+		
+		dbm = new DBManager();
+		dbm.getConnection();
+		dbm.createDefaultStuff();
+		
 		this.getConfig().options().copyDefaults(true);
 		this.saveConfig();
 		
@@ -43,17 +52,23 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 		this.getCommand("sr").setExecutor(new CommandManager());
 	}
 	
+	@Override
+	public void onDisable()
+	{
+		dbm.close();
+	}
+	
 	private boolean loadEconomy()
 	{
 		if (this.getServer().getPluginManager().getPlugin("Vault") == null)
 		{
-			logger.severe("Vault 플러그인을 찾지 못했습니다. 플러그인을 중단합니다.");
+			logger.severe(lm.getString("srt_unable_to_find_vault"));
 			return false;
 		}
 		
 		RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp == null || rsp.getProvider() == null) {
-			logger.severe("Economy 호환 플러그인을 찾지 못했습니다. 플러그인을 중단합니다.");
+			logger.severe(lm.getString("srt_unable_to_find_econ"));
             return false;
         }
         
@@ -77,31 +92,29 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 		else
 		{
 			RPGClass rc = ClassManager.getPlayerClass(ply);
-			SimpleRPGMain.logger.info("입장한 " + ply.getName() + "의 클래스는 " + rc.getKoreanName() + "입니다.");
+			SimpleRPGMain.logger.info(lm.format("srt_player_join", ply.getName(), rc.getName()));
 			ClassManager.setEffectToPlayer(ply);
 		}
 		
 		if (CustomItems.Reselector.isReselecting(ply))
 		{
-			ply.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "직업 초기화권을 사용하지 않으셨군요. 다시 생각하고 사용해주세요!");
+			ply.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + lm.getString("srt_regive_reselector"));
 			CustomItems.Reselector.give(ply);
 			CustomItems.Reselector.setReselecting(ply, false);
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onPlayerRespawn(PlayerRespawnEvent e)
 	{
 		final PlayerRespawnEvent _e = e;
 		final Player ply = _e.getPlayer();
-		final RPGClass rc = ClassManager.getPlayerClass(ply);
 		
 		_e.setRespawnLocation(ClassManager.getSpawnLocation(ply));
 		
 		this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			public void run()
 			{
-				ply.sendMessage(rc.getClassColor() + rc.getKoreanName() + ChatColor.WHITE + "에 맞는 버프를 지급받고 스폰 장소로 텔레포트 되었습니다.");
 				ClassManager.setEffectToPlayer(ply);
 			}
 		}, 1);
@@ -139,7 +152,7 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 		Player ply = (Player) e.getPlayer();
 		String invname = ChatColor.stripColor(e.getInventory().getName());
 		
-		if (invname.equals("클래스 재선택"))
+		if (invname.equals(lm.getString("srt_class_rechoose")))
 			CustomItems.Reselector.setReselecting(ply, true);
 	}
 	
@@ -148,7 +161,7 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 	{
 		String invname = ChatColor.stripColor(e.getInventory().getName());
 		
-		if (!invname.equals("클래스 선택") && !invname.equals("클래스 재선택"))
+		if (!invname.equals(lm.getString("srt_class_choose")) && !invname.equals(lm.getString("srt_class_rechoose")))
 			return;
 
 		Player ply = (Player) e.getWhoClicked();
@@ -168,17 +181,17 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 		
 		switch (e.getCurrentItem().getType()) {
 		case WOOD_SWORD: // VIKING
-			ply.sendMessage(ChatColor.GOLD + "바이킹" + ChatColor.WHITE + " 클래스를 선택하셨습니다.");
+			ply.sendMessage(lm.format("srt_choosed", RPGClass.VIKING.getFriendlyNameWithColor()));
 			ClassSelector.selectClass(ply, RPGClass.VIKING);
 			ply.playSound(ply.getLocation(), Sound.BLOCK_DISPENSER_LAUNCH, 0.1F, 1);
 			break;
 		case BOW: // ELF
-			ply.sendMessage(ChatColor.AQUA + "엘프" + ChatColor.WHITE + " 클래스를 선택하셨습니다.");
+			ply.sendMessage(lm.format("srt_choosed", RPGClass.ELF.getFriendlyNameWithColor()));
 			ClassSelector.selectClass(ply, RPGClass.ELF);
 			ply.playSound(ply.getLocation(), Sound.BLOCK_DISPENSER_LAUNCH, 0.1F, 1);
 			break;
 		case COMPASS: // EXIT
-			ply.kickPlayer("안녕히 가세요.");
+			ply.kickPlayer(lm.getString("srt_kick_no_choose"));
 		default:
 			//ply.closeInventory();
 			break;
@@ -191,17 +204,17 @@ public class SimpleRPGMain extends JavaPlugin implements Listener {
 		final Player ply = (Player) e.getPlayer();
 		String invname = ChatColor.stripColor(e.getInventory().getName());
 		
-		if (invname.equals("클래스 선택") && !ClassManager.hasPlayerClass(ply))
+		if (invname.equals(lm.getString("srt_class_choose")) && !ClassManager.hasPlayerClass(ply))
 			SimpleRPGMain.plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
 				public void run() {
-					ply.sendMessage(ChatColor.RED + "클래스를 선택해주세요.");
+					ply.sendMessage(ChatColor.RED + lm.getString("srt_please_choose"));
 					ClassSelector.showSelectorGUI(ply);
 				}
 			}, 2L);
 		
-		if (invname.equals("클래스 재선택") && CustomItems.Reselector.isReselecting(ply))
+		if (invname.equals(lm.getString("srt_class_rechoose")) && CustomItems.Reselector.isReselecting(ply))
 		{
-			ply.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "직업 초기화권을 사용하지 않으셨군요. 다시 생각하고 사용해주세요!");
+			ply.sendMessage(ChatColor.BOLD + "" + ChatColor.RED + lm.getString("srt_regive_reselector"));
 			CustomItems.Reselector.give(ply);
 			CustomItems.Reselector.setReselecting(ply, false);
 		}
