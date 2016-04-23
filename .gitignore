@@ -2,3 +2,4 @@
 /.recommenders/**/*
 /**/build/$**.jar
 /**/build/$**.zip
+/**/.classpath
