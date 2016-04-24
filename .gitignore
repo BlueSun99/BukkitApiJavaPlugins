@@ -2,4 +2,7 @@
 /.recommenders/**/*
 /**/build/$**.jar
 /**/build/$**.zip
-/**/.classpath
+.classpath
+
+# It's private project.
+/WorldWar/**
